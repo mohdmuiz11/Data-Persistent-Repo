@@ -11,7 +11,9 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text highscoreText;
     public GameObject GameOverText;
+    private string currentUsername;
     
     private bool m_Started = false;
     private int m_Points;
@@ -36,6 +38,12 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        // Get currentUserName, not userName
+        currentUsername = GameManager.Instance.currentUserName;
+
+        // Initialize highscore
+        GetHighScore();
     }
 
     private void Update()
@@ -65,6 +73,7 @@ public class MainManager : MonoBehaviour
         }
     }
 
+    // can be used to display username as well
     void AddPoint(int point)
     {
         m_Points += point;
@@ -75,5 +84,23 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        // save the points if the m_Points is higher than save data's highscore
+        if (m_Points > GameManager.Instance.highScore)
+        {
+            GameManager.Instance.highScore = m_Points;
+            GameManager.Instance.userName = currentUsername;
+            GameManager.Instance.SavePlayerData();
+            GetHighScore();
+        }
+    }
+
+    // Display/Update highscore
+    public void GetHighScore()
+    {
+        // Initialize highscore text
+        string username = GameManager.Instance.userName;
+        int highscore = GameManager.Instance.highScore;
+        highscoreText.text = $"Best Score : {username} : {highscore}";
     }
 }
